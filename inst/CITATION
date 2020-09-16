@@ -1,0 +1,12 @@
+citHeader("To cite the methods used in this package, please use:")
+
+
+citEntry(entry = "article",
+    title = "Testing Forecast Rationality for Measures of Central Tendency",
+    author = "Dimitriadis Timo and Patton Andrew J and Schmidt Patrick",
+    journal = "arXiv preprint arXiv:1910.12545",
+    year="2019",
+    textVersion  = paste("Dimitriadis, T., Patton, A. J., & Schmidt, P. (2019).",
+    "Testing Forecast Rationality for Measures of Central Tendency.",
+    "arXiv preprint arXiv:1910.12545."))
+

@@ -1,11 +1,18 @@
 Package: fcrat
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Testing Forecast Rationality for Measures of Central Tendency: Mean, Median, and Mode
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Patrick Schmidt, Timo Dimitriadis, Andrew Patton
+Maintainer: Patrick Schmidt <pschmidte@gmail.com>
+Description: Forecast rationality tests based on the paper "Testing Forecast Rationality for Measures of Central Tendency" by Timo Dimitriadis, Andrew Patton, and Patrick Schmidt.
+License: CC0
 Encoding: UTF-8
 LazyData: true
+Depends: 
+    R (>= 3.2.0)
+RoxygenNote: 7.1.1
+Suggests: 
+    testthat
+Imports: 
+    dplyr,
+    sandwich

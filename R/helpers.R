@@ -1,0 +1,2 @@
+#' @export
+lag <- dplyr::lag
