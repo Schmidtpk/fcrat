@@ -88,7 +88,7 @@ res <- test_convex(x = sce$expectation,
 plot(res)
 ```
 
-<img src="man/figures/README-example3-1.png" width="50%" />
+<img src="man/figures/README-example3-1.png" width="80%" />
 
 ## Are exchange rates rational?
 
@@ -106,7 +106,7 @@ res <- test_convex(x = data$fc,
 plot(res)
 ```
 
-<img src="man/figures/README-example4-1.png" width="50%" />
+<img src="man/figures/README-example4-1.png" width="80%" />
 
 While the mean is in the confidence set (as postulated by the rational
 market hypothesis), the median and mode are rejected.
