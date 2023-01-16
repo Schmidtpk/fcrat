@@ -20,9 +20,6 @@ id_convex(
 
 \item{bw}{bandwidth. Numeric or function. (standard selects autamtically with rule of thumb)}
 }
-\value{
-
-}
 \description{
 Identification functions of convex combination of mode, mean, and median
 }

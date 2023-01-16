@@ -28,9 +28,6 @@ or a function that has ids (matrix of identification function values) as input.}
 
 \item{bw}{numeric, function or vector. optional if iden fct requires bandwidth.}
 }
-\value{
-
-}
 \description{
 Computes conditional calibration test
 }

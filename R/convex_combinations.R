@@ -71,7 +71,9 @@ test_convex <- function(data=NULL,
 {
 
   ### transform inputs
-  if(all(sapply(instruments,length)==1))
+  if(is.null(instruments)) #NULL to constant
+    instruments <- "const"
+  else if(all(sapply(instruments,length)==1)) # one set of instruments, wrap in list
     instruments <- list(instruments)
 
   if(is.null(data) & (is.null(x)|is.null(y)))
@@ -132,8 +134,7 @@ test_convex <- function(data=NULL,
 
   }
 
-  if(is.null(instruments))
-    instruments <- "const"
+
 
   # safe original data (x,y changed in loop later)
   Xorg <- x
@@ -230,6 +231,9 @@ test_convex <- function(data=NULL,
   return(out)
 }
 
+
+
+
 #' @export
 plot.convex3 <- function(x, alpha_level=c(0.05,0.1))
 {
@@ -237,6 +241,7 @@ plot.convex3 <- function(x, alpha_level=c(0.05,0.1))
   require("ggrepel")
   require(latex2exp)
 
+  size.points <- 4
 
   x$data$label <- NA
   x$data$label[x$data$theta1==0 & x$data$theta2==0]<-"mean"
@@ -253,101 +258,184 @@ plot.convex3 <- function(x, alpha_level=c(0.05,0.1))
 
   if(length(alpha_level)==1)
   {
-      plot <- ggplot(x$data,aes(x=theta1,y=theta2, color= factor(pval>alpha_level,levels = c("TRUE","FALSE"))
-                                ,size=pval))+
-        geom_point()
-
-      plot <- plot +
-        theme(
-              text = element_text(size=16),
-              legend.position="bottom",
-              axis.text.x=element_blank(),
-              axis.ticks=element_blank(),
-              axis.title.x=element_blank(),
-              strip.text.y = element_blank(),
-              strip.background.y = element_blank(),
-              panel.background=element_blank(),
-              panel.border=element_blank(),
-              panel.grid.major=element_blank(),
-              panel.grid.minor=element_blank(),
-              plot.background=element_blank())+
-        labs(size = "p-value")+
-        scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
-        scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
-        annotate("text", x=.5, y=.95, label="mode", color="black")+
-        annotate("text", x=0, y=-.1, label="mean", color="black")+
-        annotate("text", x=1, y=-.1, label="median", color="black")
-
-      if(flexible.size){
-        plot <- plot +
-          scale_size_continuous(limits=c(0,1),range = c(0,4)) + guides(colour = guide_legend(override.aes = list(size=4)), size=F)
-      } else{
-        plot <- plot +
-          scale_size_continuous(limits=c(0,1),range = c(4,4)) + guides(colour = guide_legend(override.aes = list(size=4)), size=F)
-      }
-
-    name_legend <- paste0(100-alpha_level*100, "% confidence sets")
-
-
-    if(color)
-      plot <- plot + scale_color_manual(values=c("TRUE"="blue","FALSE"="red"), name=name_legend)
-    else
-      plot <- plot + scale_color_manual(values=c("TRUE"="black","FALSE"="darkgrey"), name=name_legend)
-  } else {
-
-    plot <- ggplot(x$data,aes(x=theta1,y=theta2,
-                              color= factor(findInterval(pval,alpha_level),levels=length(alpha_level):0)
-                              ,size= pval
-    ))+
-      geom_point()
-
-    plot <- plot +
-      theme(
-        text = element_text(size=16),
-        legend.position="bottom",
-        axis.text.x=element_blank(),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        panel.background=element_blank(),
-        panel.border=element_blank(),
-        panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        plot.background=element_blank())+
-      labs(size = "p-value")+
-      scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
-      scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
-      annotate("text", x=.5, y=.95, label="mode", color="black")+
-      annotate("text", x=0, y=-.1, label="mean", color="black")+
-      annotate("text", x=1, y=-.1, label="median", color="black")
-
-    if(is.null(x$data$yname))
-    {
-      plot <- plot + theme(
-        strip.text.y = element_blank(),
-        strip.background.y = element_blank()
-      )
-    }
-
-
-    plot <- plot +
-      scale_size_continuous(limits=c(0,1),range = c(4,4)) +
-      guides(colour = guide_legend(override.aes = list(size=4)), size=F)
-
-    name.legend <- "confidence sets"
-
-    levels.cur <- c(alpha_level)
-
-    levels_label <- NULL
-    for(i in 1:length(levels.cur)){
-      levels_label <- c(paste0(100-100*levels.cur[i],"%"),levels_label)
-    }
-    levels_label <- c(levels_label,"rejected")
-
-    plot <- plot + scale_color_grey(start = 0,end = .85,name=name.legend, labels=levels_label,drop = FALSE)
+    warning("With just one alpha_level the color scheme might be off.")
+    alpha_level <- c(alpha_level,alpha_level)
   }
 
-    return( plot <- plot + facet_grid(1~instruments))
+  plot <- ggplot(x$data,aes(x=theta1,y=theta2,
+                            fill = factor(findInterval(pval,alpha_level),
+                                          levels=length(alpha_level):0),
+                            color = factor(findInterval(pval,alpha_level),
+                                           levels=length(alpha_level):0),
+                            size=pval))+
+    geom_point(shape=21)
+
+  plot <- plot +
+    theme(
+      text = element_text(size=16),
+      legend.position="bottom",
+      axis.text.x=element_blank(),
+      axis.ticks=element_blank(),
+      axis.title.x=element_blank(),
+      panel.background=element_blank(),
+      panel.border=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.grid.minor=element_blank(),
+      plot.background=element_blank())+
+    labs(size = "p-value")+
+    scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
+    scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
+    annotate("text", x=.5, y=.95, label="mode", color="black")+
+    annotate("text", x=0, y=-.1, label="mean", color="black")+
+    annotate("text", x=1, y=-.1, label="median", color="black")
+
+  if(is.null(x$data$yname))
+  {
+    plot <- plot + theme(
+      strip.text.y = element_blank(),
+      strip.background.y = element_blank()
+    )
+  }
+
+
+  plot <- plot +
+    scale_size_continuous(limits=c(0,1),range = c(size.points,size.points)) +
+    guides(fill = guide_legend(override.aes = list(size=size.points)), size=F)
+
+  name.legend <- "confidence sets"
+
+  levels.cur <- c(alpha_level)
+
+  levels_label <- NULL
+  for(i in 1:length(levels.cur)){
+    levels_label <- c(paste0(100-100*levels.cur[i],"%"),levels_label)
+  }
+  levels_label <- c(levels_label,"rejected")
+
+  plot <- plot + scale_fill_grey(start = 0,end = 1,name=name.legend, labels=levels_label,drop = FALSE)+
+    scale_color_grey(start = 0,end = .75,name=name.legend, labels=levels_label,drop = FALSE)
+
+
+  return( plot <- plot + facet_grid(1~instruments))
 }
+
+
+# plotold.convex3 <- function(x, alpha_level=c(0.05,0.1),flexible.size=F)
+# {
+#   require(ggplot2)
+#   require("ggrepel")
+#   require(latex2exp)
+#
+#
+#   x$data$label <- NA
+#   x$data$label[x$data$theta1==0 & x$data$theta2==0]<-"mean"
+#   x$data$label[x$data$theta1==1 & x$data$theta2==0]<-"median"
+#   x$data$label[x$data$theta1==0 & x$data$theta2==1]<-"mode"
+#
+#
+#   # rotate
+#   x$data$theta1n <- x$data$theta1 + 1/2 * x$data$theta2
+#   x$data$theta2n <-  sqrt(3)/2 * x$data$theta2
+#   x$data$theta1 <- x$data$theta1n
+#   x$data$theta2 <- x$data$theta2n
+#
+#
+#   if(length(alpha_level)==1)
+#   {
+#       plot <- ggplot(x$data,aes(x=theta1,y=theta2, color= factor(pval>alpha_level,levels = c("TRUE","FALSE"))
+#                                 ,size=pval))+
+#         geom_point()
+#
+#       plot <- plot +
+#         theme(
+#               text = element_text(size=16),
+#               legend.position="bottom",
+#               axis.text.x=element_blank(),
+#               axis.ticks=element_blank(),
+#               axis.title.x=element_blank(),
+#               strip.text.y = element_blank(),
+#               strip.background.y = element_blank(),
+#               panel.background=element_blank(),
+#               panel.border=element_blank(),
+#               panel.grid.major=element_blank(),
+#               panel.grid.minor=element_blank(),
+#               plot.background=element_blank())+
+#         labs(size = "p-value")+
+#         scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
+#         scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
+#         annotate("text", x=.5, y=.95, label="mode", color="black")+
+#         annotate("text", x=0, y=-.1, label="mean", color="black")+
+#         annotate("text", x=1, y=-.1, label="median", color="black")
+#
+#       if(flexible.size){
+#         plot <- plot +
+#           scale_size_continuous(limits=c(0,1),range = c(0,4)) + guides(colour = guide_legend(override.aes = list(size=4)), size=F)
+#       } else{
+#         plot <- plot +
+#           scale_size_continuous(limits=c(0,1),range = c(4,4)) + guides(colour = guide_legend(override.aes = list(size=4)), size=F)
+#       }
+#
+#     name_legend <- paste0(100-alpha_level*100, "% confidence sets")
+#
+#
+#
+#       plot <- plot + scale_color_manual(values=c("TRUE"="black","FALSE"="darkgrey"), name=name_legend)
+#   } else {
+#
+#     plot <- ggplot(x$data,aes(x=theta1,y=theta2,
+#                               color= factor(findInterval(pval,alpha_level),levels=length(alpha_level):0)
+#                               ,size= pval
+#     ))+
+#       geom_point()
+#
+#     plot <- plot +
+#       theme(
+#         text = element_text(size=16),
+#         legend.position="bottom",
+#         axis.text.x=element_blank(),
+#         axis.ticks=element_blank(),
+#         axis.title.x=element_blank(),
+#         panel.background=element_blank(),
+#         panel.border=element_blank(),
+#         panel.grid.major=element_blank(),
+#         panel.grid.minor=element_blank(),
+#         plot.background=element_blank())+
+#       labs(size = "p-value")+
+#       scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
+#       scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
+#       annotate("text", x=.5, y=.95, label="mode", color="black")+
+#       annotate("text", x=0, y=-.1, label="mean", color="black")+
+#       annotate("text", x=1, y=-.1, label="median", color="black")
+#
+#     if(is.null(x$data$yname))
+#     {
+#       plot <- plot + theme(
+#         strip.text.y = element_blank(),
+#         strip.background.y = element_blank()
+#       )
+#     }
+#
+#
+#     plot <- plot +
+#       scale_size_continuous(limits=c(0,1),range = c(4,4)) +
+#       guides(colour = guide_legend(override.aes = list(size=4)), size=F)
+#
+#     name.legend <- "confidence sets"
+#
+#     levels.cur <- c(alpha_level)
+#
+#     levels_label <- NULL
+#     for(i in 1:length(levels.cur)){
+#       levels_label <- c(paste0(100-100*levels.cur[i],"%"),levels_label)
+#     }
+#     levels_label <- c(levels_label,"rejected")
+#
+#     plot <- plot + scale_color_grey(start = 0,end = .85,name=name.legend, labels=levels_label,drop = FALSE)
+#   }
+#
+#     return( plot <- plot + facet_grid(1~instruments))
+# }
+
 
 
 
@@ -377,67 +465,67 @@ plot_numbers <- function(x, alpha_level=0.1, ...)
   x$data$theta1 <- x$data$theta1n
   x$data$theta2 <- x$data$theta2n
 
+
+  # labels
+  x$data$pval[x$data$pval > .99] <-.99
   x$data$pval_label <- substr(as.character(round(x$data$pval, digits = 2)),2,5)
   x$data$pval_label <- ifelse(substr(x$data$pval_label,1,1)==".",
                               x$data$pval_label,".00")
 
-
-    plot <- ggplot(x$data,aes(x=theta1,y=theta2,
-                              color = factor(pval>alpha_level,levels = c("TRUE","FALSE")),
-                              fill = pval,
-                              label = pval_label
-    ))+
-      geom_label()
+  x$data$pval_label <- ifelse(nchar(x$data$pval_label)==2,
+                              paste0(x$data$pval_label,'0'),x$data$pval_label)
 
 
-    plot <- plot +
-      theme(
-        text = element_text(),
-        legend.position="bottom",
-        axis.text.x=element_blank(),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        panel.background=element_blank(),
-        panel.border=element_blank(),
-        panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        plot.background=element_blank())+
-      labs(size = "p-value")+
-      scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
-      scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
-      annotate("text", x=.5, y=.95, label="mode", color="black")+
-      annotate("text", x=0, y=-.1, label="mean", color="black")+
-      annotate("text", x=1, y=-.1, label="median", color="black")
-
-    if(is.null(x$data$yname))
-    {
-      plot <- plot + theme(
-        strip.text.y = element_blank(),
-        strip.background.y = element_blank()
-      )
-    }
+  x$data$pval[x$data$pval > .99] <-.99
 
 
+  plot <- ggplot(x$data,aes(x=theta1,y=theta2,
+                            color = factor(pval>alpha_level,levels = c("TRUE","FALSE")),
+                            fill = pval,
+                            label = pval_label
+  ))+
+    geom_label()
 
-      plot <- plot +
-        scale_size_continuous(limits=c(0,1),range = c(4,4)) + guides(size=F,color=F)
 
-    name_legend <- paste0(100-alpha_level*100, "% confidence sets")
+  plot <- plot +
+    theme(
+      text = element_text(),
+      legend.position="right",
+      axis.text.x=element_blank(),
+      axis.ticks=element_blank(),
+      axis.title.x=element_blank(),
+      panel.background=element_blank(),
+      panel.border=element_blank(),
+      panel.grid.major=element_blank(),
+      panel.grid.minor=element_blank(),
+      plot.background=element_blank())+
+    labs(size = "p-value")+
+    scale_x_continuous(breaks=c(),labels = c(), name = "", limits = c(-.15,1.15))+
+    scale_y_continuous(breaks=c(),labels = c(),name = "", limits = c(-.1,.95))+
+    annotate("text", x=.5, y=.95, label="mode", color="black")+
+    annotate("text", x=0, y=-.1, label="mean", color="black")+
+    annotate("text", x=1, y=-.1, label="median", color="black")
 
-    levels.cur <- c(alpha_level)
+  if(is.null(x$data$yname))
+  {
+    plot <- plot + theme(
+      strip.text.y = element_blank(),
+      strip.background.y = element_blank()
+    )
+  }
 
-    levels_label <- NULL
-    for(i in 1:length(levels.cur)){
-      levels_label <- c(paste0(100-100*levels.cur[i],"%"),levels_label)
-    }
-    levels_label <- c(levels_label,"rejected")
 
-     plot <- plot +
-       scale_color_manual(values=c("TRUE"="black","FALSE"="white"), name=name_legend)+
-       scale_fill_gradient(low="black",high="white",limits=c(0,.2),na.value = "white")+
-       facet_grid(1~instruments)
 
-     return(plot)
+  plot <- plot +
+    scale_size_continuous(limits=c(0,1),range = c(4,4)) + guides(size=F,color=F)
+
+
+  plot <- plot +
+    scale_color_manual(values=c("FALSE"="black","TRUE"="white"))+
+    scale_fill_gradient(low="white",high="black",limits=c(0,.2),na.value = "black",name = 'p-value')+
+    facet_grid(1~instruments)
+
+  return(plot)
 }
 
 

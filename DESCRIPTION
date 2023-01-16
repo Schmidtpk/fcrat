@@ -1,7 +1,7 @@
 Package: fcrat
 Type: Package
 Title: Testing Forecast Rationality for Measures of Central Tendency: Mean, Median, and Mode
-Version: 0.1.0
+Version: 0.1.1
 Author: Patrick Schmidt, Timo Dimitriadis, Andrew Patton
 Maintainer: Patrick Schmidt <pschmidte@gmail.com>
 Description: Forecast rationality tests based on the paper "Testing Forecast Rationality for Measures of Central Tendency" by Timo Dimitriadis, Andrew Patton, and Patrick Schmidt.
@@ -10,7 +10,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 3.2.0)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Suggests: 
     testthat
 Imports: 

@@ -30,6 +30,9 @@ dat_main2 <- readxl::read_excel(path = "./data-raw/SCE/Microdata-17-present.xlsx
 
 dat_main <- plyr::rbind.fill(dat_main1,dat_main2)
 
+nrow(dat_main)
+n_distinct(dat_main$userid)
+
 # keep first interview only
 dat_main <- dat_main %>% group_by(userid) %>% arrange(survey_date) %>% filter(row_number()==1)
 
@@ -56,9 +59,12 @@ dat_main$edu_high <- dat_main$edu>=5 #bachelor and more
 
 dat_main$married <- dat_main$Q38==1
 
+dat_main$better.past <- dat_main$Q1-3
+dat_main$better.future <- dat_main$Q2-3
+
 dat_main_small <- dat_main %>%
   select(userid,date,age,female,hispanic,white,edu,edu_high,married,
-         num_cat,hhinc_cat,edu_cat,age_cat)
+         num_cat,hhinc_cat,edu_cat,age_cat,better.future,better.past)
 
 ### merge
 

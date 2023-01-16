@@ -5,7 +5,7 @@
 \alias{sce}
 \title{SCE: Survey of consumer expectations}
 \format{
-An object of class \code{data.frame} with 4030 rows and 173 columns.
+An object of class \code{data.frame} with 4030 rows and 175 columns.
 }
 \source{
 Source: Survey of Consumer Expectations, © 2013-2020 Federal Reserve Bank of New York (FRBNY). The SCE data are available without charge at http://www.newyorkfed.org/microeconomics/sce and may be used subject to license terms posted there. FRBNY disclaims any responsibility for this analysis and interpretation of Survey of Consumer Expectations data.

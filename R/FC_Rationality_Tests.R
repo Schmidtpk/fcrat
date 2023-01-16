@@ -43,7 +43,7 @@ create.instrument.matrix <- function(X,Y,instruments,other_data=NULL,silent=TRUE
       }
 
       #drop incomplete cases
-      compl <- complete.cases(w)
+      compl <- complete.cases(data.frame(w,X,Y))
 
       if(!silent)
         message(paste("Drop ", length(Y) - sum(compl), "case(s) because of chosen instruments"))
