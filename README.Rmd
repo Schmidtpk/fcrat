@@ -41,7 +41,6 @@ library(fcrat)
 test_central(x = GDP$FC.first,
              y = GDP$Obs.recent)
 
-
 ```
 
 The output depicts the p-values for each functional. The GDP forecast is consistent with a rational mean forecast, but partially inconsistent with a median or mode forecast (deduced from the p-values below 0.1).
@@ -68,6 +67,9 @@ In this example, we consider the survey of consumer expectations. For more infor
 
 ```{r example3, message = FALSE}
 library(fcrat)
+
+# As in the paper, we drop observations that include forecasts or realizations of annualized income below $ 1,000 or above $ 1 million, which represent less than 1% of the initial sample. We also drop observations where the ratio of the realization to the forecast, or its inverse, is between 9 and 13, to avoid our results being aﬀected by misplaced decimal points or by the failure to report annualized income (leading to proportional errors of around 10 to 12 respectively).
+sce <- sce[sce$filter1 & sce$filter3,]
 
 res <- test_convex(x = sce$expectation,
                    y = sce$income)

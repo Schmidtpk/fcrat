@@ -82,6 +82,9 @@ mean or median forecasts.
 ``` r
 library(fcrat)
 
+# As in the paper, we drop observations that include forecasts or realizations of annualized income below $ 1,000 or above $ 1 million, which represent less than 1% of the initial sample. We also drop observations where the ratio of the realization to the forecast, or its inverse, is between 9 and 13, to avoid our results being aﬀected by misplaced decimal points or by the failure to report annualized income (leading to proportional errors of around 10 to 12 respectively).
+sce <- sce[sce$filter1 & sce$filter3,]
+
 res <- test_convex(x = sce$expectation,
                    y = sce$income)
 plot(res)
