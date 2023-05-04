@@ -4,12 +4,11 @@
 # fcrat
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The goal of fcrat is to provide easy access to the methods of the paper
-“Testing Forecast Rationality for Measures of Central Tendency” by
-Timo Dimitriadis, Andrew Patton, and Patrick Schmidt.
+“Testing Forecast Rationality for Measures of Central Tendency” by Timo
+Dimitriadis, Andrew Patton, and Patrick Schmidt.
 
 ## Installation
 
@@ -86,9 +85,24 @@ library(fcrat)
 res <- test_convex(x = sce$expectation,
                    y = sce$income)
 plot(res)
+#> Warning: package 'ggplot2' was built under R version 4.1.3
+#> Warning: package 'latex2exp' was built under R version 4.1.3
+#> Warning: `guides(<scale> = FALSE)` is deprecated. Please use `guides(<scale> =
+#> "none")` instead.
 ```
 
 <img src="man/figures/README-example3-1.png" width="80%" />
+
+You can also include the p-values with the `plot_numbers` function.
+
+``` r
+
+plot_numbers(res)
+#> Warning: `guides(<scale> = FALSE)` is deprecated. Please use `guides(<scale> =
+#> "none")` instead.
+```
+
+<img src="man/figures/README-example3_numbers-1.png" width="80%" />
 
 ## Are exchange rates rational?
 
@@ -104,6 +118,8 @@ res <- test_convex(x = data$fc,
                    y = data$realization,
                    instruments = c("1","lag(X-Y)"))
 plot(res)
+#> Warning: `guides(<scale> = FALSE)` is deprecated. Please use `guides(<scale> =
+#> "none")` instead.
 ```
 
 <img src="man/figures/README-example4-1.png" width="80%" />

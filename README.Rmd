@@ -75,6 +75,16 @@ plot(res)
 
 ```
 
+
+You can also include the p-values with the `plot_numbers` function.
+
+
+```{r example3_numbers, message = FALSE}
+
+plot_numbers(res)
+
+```
+
 ## Are exchange rates rational?
 
 In this example, we consider exchange rates as forecasts for the next trading day. For more information see `?exchange`. Here, we show the results for the exchange rate between the Euro and the Japanese Yen.
